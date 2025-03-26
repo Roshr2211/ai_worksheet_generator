@@ -15,6 +15,10 @@ from openai import OpenAI
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def connect_db():
+    return sqlite3.connect(":memory:")  # In-memory database (temporary, resets every restart)
+
+
 # Database Class
 class WorksheetDatabase:
     def __init__(self, db_path='worksheets.db'):
@@ -244,10 +248,15 @@ def response(prompt_text, max_retries=3):
     progress_bar.empty()
     st.error("Failed to generate worksheet after maximum retries. Please try again.")
     return None
+import os
+
+OPENAI_API_KEY = os.getenv("OPENROUTER_API_KEY")  # Load from Vercel
+
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=st.secrets["OPENROUTER_API_KEY"]
+    api_key=OPENAI_API_KEY
 )
+
 
 # Prompt Generation
 def prompt(subject, topic):
